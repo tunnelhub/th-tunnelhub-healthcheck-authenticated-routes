@@ -1,0 +1,11 @@
+.idea
+
+.aws-sam
+.webpackCache/
+
+dist
+build
+node_modules
+
+/coverage/*
+!/coverage/badge.svg

@@ -1,0 +1,11 @@
+service:
+  type: automation
+  uuid: 019dd971-bb3c-7491-8d18-d6c4e503c6ba
+package:
+  artifact: dist/artifact.zip
+configuration:
+  runtimeEngine: LAMBDA
+  entrypoint: index.handler
+  runtime: nodejs22.x
+  memorySize: 512
+  timeout: 30
