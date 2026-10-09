@@ -70,6 +70,7 @@ export default class Integration extends NoDeltaIntegrationFlow<AuthenticatedRou
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${idToken}`,
+                TenantId: this.executionEvent.tenantId,
                 ...check.headers,
             },
         });
