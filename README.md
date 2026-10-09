@@ -164,25 +164,25 @@ export default [
 ### Execução de Testes
 ```bash
 # Executar todos os testes
-yarn test
+pnpm test
 
 # Executar com cobertura
-yarn test:coverage
+pnpm test:coverage
 
 # Gerar badge de cobertura
-yarn test:badges
+pnpm test:badges
 ```
 
 ### Deploy em Ambientes
 ```bash
 # Ambiente de Desenvolvimento
-yarn deploy:dev --message "Descrição da alteração"
+pnpm deploy:dev --message "Descrição da alteração"
 
 # Ambiente de Produção
-yarn deploy:prd --message "Descrição da alteração"
+pnpm deploy:prd --message "Descrição da alteração"
 
 # Deploy manual em ambiente específico
-yarn build && th deploy-automation --env NOME_AMBIENTE --message "Descrição"
+pnpm build && th deploy-automation --env NOME_AMBIENTE --message "Descrição"
 ```
 
 ### Monitoramento
@@ -216,7 +216,7 @@ Configure o sistema `TUNNELHUB_UPTIME` no TunnelHub com:
 Configurações padrão em `tunnelhub.yml`:
 
 ```yaml
-runtime: nodejs22.x
+runtime: nodejs24.x
 memorySize: 512mb
 timeout: 30s
 ```
@@ -236,19 +236,19 @@ Este projeto utiliza **Yarn** como gerenciador de pacotes padrão.
 
 ```bash
 # Instalar dependências
-yarn install
+pnpm install
 
 # Executar testes
-yarn test
+pnpm test
 
 # Executar testes com cobertura
-yarn test:coverage
+pnpm test:coverage
 
 # Compilar projeto
-yarn build
+pnpm build
 
 # Verificar tipos TypeScript
-yarn tsc
+pnpm tsc
 ```
 
 ## 🚀 Início Rápido
@@ -261,7 +261,7 @@ yarn tsc
 
 2. **Instale as dependências**
    ```bash
-   yarn install
+   pnpm install
    ```
 
 3. **Configure os parâmetros no TunnelHub**
@@ -276,12 +276,12 @@ yarn tsc
 
 5. **Execute os testes**
    ```bash
-   yarn test
+   pnpm test
    ```
 
 6. **Faça o deploy**
    ```bash
-   yarn deploy:dev --message "Deploy inicial"
+   pnpm deploy:dev --message "Deploy inicial"
    ```
 
 ## 📚 Documentação Adicional
@@ -297,3 +297,7 @@ UNLICENSED
 ## 👥 Suporte
 
 Para questões relacionadas ao TunnelHub, consulte nossa [documentação oficial](https://docs.tunnelhub.io) ou abra uma issue no repositório do projeto.
+
+## Entrega automatizada
+
+Node.js 24, @tunnelhub/sdk 4.1.5 e pnpm 12.10.1. O workflow instala o lockfile congelado, checa tipos, gera o artefato e publica nos ambientes ativos configurados. Não executa testes.
