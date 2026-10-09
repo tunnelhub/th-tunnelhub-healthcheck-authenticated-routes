@@ -1,0 +1,74 @@
+name: Deploy TunnelHub
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Ambiente de destino
+        type: choice
+        options: [production]
+        default: production
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tunnelhub-deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.target || 'production' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Habilitar pnpm
+        run: corepack enable
+
+      - name: Instalar dependências
+        run: pnpm install --frozen-lockfile
+
+      - name: Checar tipos
+        run: pnpm tsc
+
+      - name: Gerar artefato
+        run: pnpm build
+
+      - name: Publicar automação
+        env:
+          TH_API_HOST: https://api.tunnelhub.io
+          TH_CLIENT_ID: ${{ secrets.TH_CLIENT_ID }}
+          TH_CLIENT_SECRET: ${{ secrets.TH_CLIENT_SECRET }}
+          TH_ENVIRONMENT_ID: ${{ vars.TH_ENVIRONMENT_ID }}
+          DEPLOY_BRANCH: ${{ github.ref_name }}
+          DEPLOY_ACTOR: ${{ github.actor }}
+          DEPLOY_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          : "${TH_CLIENT_ID:?Configure o secret TH_CLIENT_ID no GitHub Environment}"
+          : "${TH_CLIENT_SECRET:?Configure o secret TH_CLIENT_SECRET no GitHub Environment}"
+          : "${TH_ENVIRONMENT_ID:?Configure a variable TH_ENVIRONMENT_ID no GitHub Environment}"
+
+          COMMIT_MESSAGE="$(git log -1 --pretty=format:'%B')"
+          COMMIT_SHA="$(git rev-parse --short HEAD)"
+          COMMIT_EMAIL="$(git log -1 --pretty=format:'%ae')"
+          DEPLOY_MESSAGE="$(printf '%s\n\nDeploy %s - branch %s - autor %s - executor %s\n%s' \
+            "$COMMIT_MESSAGE" "$COMMIT_SHA" "$DEPLOY_BRANCH" "$COMMIT_EMAIL" "$DEPLOY_ACTOR" "$DEPLOY_RUN_URL")"
+
+          pnpm --package=@tunnelhub/cli@3.0.1 dlx tunnelhub deploy-automation \
+            --environment-id "$TH_ENVIRONMENT_ID" \
+            --message "$DEPLOY_MESSAGE"
